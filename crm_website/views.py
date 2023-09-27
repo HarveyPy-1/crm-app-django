@@ -2,9 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .form import SignUpForm
+from .models import Record
 
 # Mixture of login/home page. Template in home.html
 def home(request):
+    #Assign all records in the database to 'records'
+    records = Record.objects.all()
+
     # Check to see if user is logging in
     if request.method == 'POST':
         username = request.POST['username']
@@ -21,7 +25,7 @@ def home(request):
                 request, "There was an error, please try again...")
             return redirect('home')
     else:
-        return render(request, 'home.html', {})
+        return render(request, 'home.html', {'records': records})
 
 
 # def login_user(request):
