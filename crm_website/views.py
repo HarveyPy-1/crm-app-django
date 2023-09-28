@@ -4,7 +4,7 @@ from django.contrib import messages
 from .form import SignUpForm
 from .models import Record
 
-# Mixture of login/home page. Template in home.html
+# Mixture of login/home page, called conditionally
 def home(request):
     #Assign all records in the database to 'records'
     records = Record.objects.all()
@@ -56,3 +56,11 @@ def logout_user(request):
     logout(request)
     messages.success(request, "You've been successfully logged out")
     return redirect ('home')
+
+def customer_record(request, pk):
+    if request.user.is_authenticated:
+        customer_record = Record.objects.get(id=pk)
+        return render(request, 'record.html', {'customer_record': customer_record})
+    else:
+        messages.success(request, "You must be logged in...")
+        return redirect ('home')
