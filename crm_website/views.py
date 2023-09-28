@@ -5,8 +5,10 @@ from .form import SignUpForm, AddRecordForm
 from .models import Record
 
 # Mixture of login/home page, called conditionally
+
+
 def home(request):
-    #Assign all records in the database to 'records'
+    # Assign all records in the database to 'records'
     records = Record.objects.all()
 
     # Check to see if user is logging in
@@ -47,15 +49,16 @@ def register_user(request):
             return redirect('home')
     else:
         form = SignUpForm()
-        return render (request, 'register.html', {'form': form})
-    
-    return render (request, 'register.html', {'form': form})
+        return render(request, 'register.html', {'form': form})
+
+    return render(request, 'register.html', {'form': form})
 
 
 def logout_user(request):
     logout(request)
     messages.success(request, "You've been successfully logged out")
-    return redirect ('home')
+    return redirect('home')
+
 
 def customer_record(request, pk):
     if request.user.is_authenticated:
@@ -63,7 +66,8 @@ def customer_record(request, pk):
         return render(request, 'record.html', {'customer_record': customer_record})
     else:
         messages.success(request, "You must be logged in...")
-        return redirect ('home')
+        return redirect('home')
+
 
 def delete_record(request, pk):
     if request.user.is_authenticated:
@@ -71,7 +75,8 @@ def delete_record(request, pk):
         delete_item.delete()
         messages.success(request, "Successfully deleted")
         return redirect('home')
-    
+
+
 def add_record(request):
     form = AddRecordForm(request.POST or None)
     if request.user.is_authenticated:
@@ -81,6 +86,20 @@ def add_record(request):
                 messages.success(request, "Record Added")
                 return redirect('home')
         return render(request, 'add_record.html', {'form': form})
+    else:
+        messages.success(request, "You must be logged in")
+        return redirect('home')
+
+
+def update_record(request, pk):
+    if request.user.is_authenticated:
+        current_record = Record.objects.get(id=pk)
+        form = AddRecordForm(request.POST or None, instance=current_record)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Changes successfully saved!")
+            return redirect('home')
+        return render(request, 'update_record.html', {'form': form})
     else:
         messages.success(request, "You must be logged in")
         return redirect('home')
